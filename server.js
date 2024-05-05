@@ -5,20 +5,21 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
 
-const authMiddleware = require('./middleware/authMiddleware'); // Make sure this path is correct
-const userRoutes = require('./Routes/userRoutes'); // Make sure this path is correct
+const authMiddleware = require('./middleware/authMiddleware');
+const userRoutes = require('./Routes/userRoutes');
 
-// Initialize Express and HTTP server
+// Initializing Express & HTTP server
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server); // Initialize socket.io with the HTTP server
+// Initializing socket.io with the HTTP server
+const io = socketIo(server);
 
-// Middleware
+// Middleware Used
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public')); // Serve static files from the 'public' directory
 
-// MongoDB Connection
+// MongoDB Connection Establishment
 console.log("DB " , process.env.MONGO_URI)
 console.log("PORT ", process.env.PORT)
 mongoose.connect(process.env.MONGO_URI, {
@@ -30,29 +31,26 @@ mongoose.connect(process.env.MONGO_URI, {
   console.error('MongoDB connection error:', err);
 });
 
-// Routes
+// Routes 
 app.use('/api', userRoutes);
 app.get('/', (req, res) => res.send('Hello World!'));
 app.get('/protected-route', authMiddleware, (req, res) => {
   res.send("This is a protected route.");
 });
 
-// Socket.io connection and event handlers setup
+// Event handlers setup and Socket.io connection 
 io.on('connection', (socket) => {
   console.log('New WebSocket connection:', socket.id);
 
-  // Simulate user authentication and associate the socket with a user ID
+  // Simulating user authentication
   socket.on('authenticate', (token) => {
-    // TODO: Validate the token and extract user ID
-    // For now, let's simulate with a fake user ID
+    // Associating the socket with a user ID
     const userId = 'fakeUserId';
     socket.userId = userId;
   });
 
-  // Handle private messages
+  // Handling private messages
   socket.on('privateMessage', ({ senderId, receiverId, message }) => {
-    // TODO: You would normally verify senderId matches the authenticated user
-    // Find the socket associated with the receiverId
     const receiverSocketId = Object.values(io.sockets.sockets).find(
       (s) => s.userId === receiverId
     )?.id;
@@ -64,11 +62,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`User with ID ${socket.userId} disconnected`);
-    // Perform any cleanup if necessary
+    // Performing cleanup if required
   });
 });
 
-// Start the server
+// Starting server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
