@@ -9,7 +9,7 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  max-width: 400px; /* Adjusted for a more chat-appropriate size */
+  max-width: 400px;
   margin: 5% auto;
   background: white;
   border-radius: 8px;
