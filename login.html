@@ -83,16 +83,18 @@
 
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem('token', data.token); // Save the token
+          // Save the token
+          localStorage.setItem('token', data.token); 
           messageDiv.textContent = 'Login successful!';
           messageDiv.style.color = '#5cb85c';
-          // Redirect to the chat page after a slight delay for better UX
+          // A slight delaye in directing chat page for better UX
           setTimeout(() => {
             window.location.href = 'chat.html'; 
           }, 1000);
         } else {
-          // If the response is not okay, throw an error with the message received from the server
+          // If response is illegal
           const errorData = await response.json();
+          // error with the message received from the server
           throw new Error(errorData.message || 'Wrong username or password');
         }
       } catch (error) {
